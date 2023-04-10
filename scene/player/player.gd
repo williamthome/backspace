@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+signal speed_changed
 
 @export var max_speed = 500
 @export var acceleration = 500
@@ -7,7 +8,14 @@ extends CharacterBody2D
 @export var friction = 100
 @export var rotation_speed = 6
 
-var speed = 0
+var speed = 0:
+	set(value):
+		if (speed == value): 
+			return
+		speed = value
+		speed_changed.emit(speed)
+		
+var accelerating = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -28,10 +36,19 @@ func _process(delta):
 	
 	if velocity_str == 0:
 		speed = max(0, speed - (delta * friction))
+		if accelerating: 
+			$AnimationPlayer.play_backwards("accelerate")
+		accelerating = false
 	elif velocity_str > 0:
 		speed = max(0, min(max_speed, speed + ((acceleration - friction) * velocity_str * delta)))
+		if not accelerating: 
+			$AnimationPlayer.play("accelerate")
+		accelerating = true
 	elif velocity_str < 0:
 		speed = max(0, speed - ((deceleration - friction) * delta))
+		if accelerating: 
+			$AnimationPlayer.play_backwards("accelerate")
+		accelerating = false
 		
 	velocity = direction * speed
 	rotation += rotation_str * rotation_speed * delta

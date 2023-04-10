@@ -1,11 +1,61 @@
-[gd_scene load_steps=3 format=3 uid="uid://h4sj4anpxqqh"]
+[gd_scene load_steps=7 format=3 uid="uid://h4sj4anpxqqh"]
 
 [ext_resource type="Script" path="res://scene/player/player.gd" id="1_pqh2y"]
 [ext_resource type="Texture2D" uid="uid://nny1beftarf6" path="res://scene/player/player.png" id="2_3eyw2"]
+[ext_resource type="Texture2D" uid="uid://vadyxadyg0sa" path="res://scene/player/propulsion.png" id="2_eqel8"]
 
-[node name="Player" type="CharacterBody2D"]
+[sub_resource type="Animation" id="Animation_ulo2l"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PropulsionSprite:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05)]
+}
+
+[sub_resource type="Animation" id="Animation_rxp7c"]
+resource_name = "accelerate"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PropulsionSprite:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 0), Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_us2jd"]
+_data = {
+"RESET": SubResource("Animation_ulo2l"),
+"accelerate": SubResource("Animation_rxp7c")
+}
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_pqh2y")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_us2jd")
+}
+
+[node name="PropulsionSprite" type="Sprite2D" parent="."]
+position = Vector2(-4, 0)
+rotation = 1.5708
+scale = Vector2(1e-05, 1e-05)
+texture = ExtResource("2_eqel8")
+offset = Vector2(0, 32)
+
+[node name="ShipSprite" type="Sprite2D" parent="."]
 rotation = 1.5708
 texture = ExtResource("2_3eyw2")
