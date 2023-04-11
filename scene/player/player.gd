@@ -3,54 +3,88 @@ extends CharacterBody2D
 signal speed_changed
 
 @export var max_speed = 500
-@export var acceleration = 500
-@export var deceleration = 500
+@export var acceleration = 300
+@export var deceleration = 300
 @export var friction = 100
-@export var rotation_speed = 6
+@export var rotation_speed = 4
 
 var speed = 0:
 	set(value):
-		if (speed == value): 
-			return
+		if speed == value: return
 		speed = value
 		speed_changed.emit(speed)
-		
-var accelerating = false
+
+var accelerate_str: float = 0.0
+var decelerate_str: float = 0.0
+var rotate_left_str: float = 0.0
+var rotate_right_str: float = 0.0
+var velocity_str: float = 0.0
+var rotation_str: float = 0.0
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.is_action("accelerate"):
+		if event.is_pressed():
+			accelerate_str = event.get_action_strength("accelerate")
+		else:
+			accelerate_str = 0
+		recalculate_velocity_str()
+	elif event.is_action("decelerate"):
+		if event.is_pressed():
+			decelerate_str = event.get_action_strength("decelerate")
+		else:
+			decelerate_str = 0
+		recalculate_velocity_str()
+	elif event.is_action("rotate_left"):
+		if event.is_pressed():
+			rotate_left_str = event.get_action_strength("rotate_left")
+		else:
+			rotate_left_str = 0
+		recalculate_rotation_str()
+	elif event.is_action("rotate_right"):
+		if event.is_pressed():
+			rotate_right_str = event.get_action_strength("rotate_right")
+		else:
+			rotate_right_str = 0
+		recalculate_rotation_str()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	var accelerate_str = Input.get_action_strength("accelerate")
-	var decelerate_str = Input.get_action_strength("decelerate")
-	var rotate_left_str = Input.get_action_strength("rotate_left")
-	var rotate_right_str = Input.get_action_strength("rotate_right")
+func recalculate_velocity_str() -> void:
+	velocity_str = accelerate_str - decelerate_str
+
+
+func recalculate_rotation_str() -> void:
+	rotation_str = rotate_right_str - rotate_left_str
+
+
+func _physics_process(delta):
+	if speed == 0 and velocity_str and rotation_str:
+		return
 	
-	var velocity_str = accelerate_str - decelerate_str
-	var rotation_str = rotate_right_str - rotate_left_str
-	var direction = Vector2(cos(rotation), sin(rotation))
+	var move_started = false
 	
 	if velocity_str == 0:
 		speed = max(0, speed - (delta * friction))
-		if accelerating: 
-			$AnimationPlayer.play_backwards("accelerate")
-		accelerating = false
 	elif velocity_str > 0:
+		move_started = speed == 0
 		speed = max(0, min(max_speed, speed + ((acceleration - friction) * velocity_str * delta)))
-		if not accelerating: 
-			$AnimationPlayer.play("accelerate")
-		accelerating = true
 	elif velocity_str < 0:
 		speed = max(0, speed - ((deceleration - friction) * delta))
-		if accelerating: 
-			$AnimationPlayer.play_backwards("accelerate")
-		accelerating = false
-		
-	velocity = direction * speed
+	
 	rotation += rotation_str * rotation_speed * delta
 	
+	var direction = Vector2(cos(rotation), sin(rotation))
+	velocity = direction * speed
+	
 	move_and_slide()
+	animate(move_started)
+
+
+func animate(move_started: bool) -> void:
+	if move_started:
+		$AnimationPlayer.play("accelerate")
+	elif speed > 0:
+		var seconds = (speed / max_speed) * $AnimationPlayer.current_animation_length
+		$AnimationPlayer.seek(seconds, true)
+	else:
+		$AnimationPlayer.stop()
