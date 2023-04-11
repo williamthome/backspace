@@ -19,6 +19,6 @@ text = "0"
 [node name="GameCamera" parent="." instance=ExtResource("2_rjwpo")]
 
 [node name="Player" parent="." instance=ExtResource("1_fitj3")]
-position = Vector2(384, 192)
+position = Vector2(320, 320)
 
 [connection signal="speed_changed" from="Player" to="." method="_on_player_speed_changed"]
