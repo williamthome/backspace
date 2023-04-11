@@ -1,10 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://cdwh0v4p86yv6"]
+[gd_scene load_steps=6 format=3 uid="uid://cdwh0v4p86yv6"]
 
 [ext_resource type="PackedScene" uid="uid://h4sj4anpxqqh" path="res://scene/player/player.tscn" id="1_fitj3"]
 [ext_resource type="Script" path="res://scene/level/main/main_level.gd" id="1_iafu6"]
+[ext_resource type="Texture2D" uid="uid://dvc8o56bumrur" path="res://assets/star_medium.png" id="2_6afnw"]
+
+[sub_resource type="Curve" id="Curve_xux4v"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Gradient" id="Gradient_qc6vn"]
+offsets = PackedFloat32Array(0, 0.30855, 0.542751, 0.758364, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="MainLevel" type="Node"]
 script = ExtResource("1_iafu6")
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_mirroring = Vector2(640, 640)
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="ParallaxBackground/ParallaxLayer"]
+position = Vector2(320, 320)
+amount = 10
+lifetime = 10.0
+preprocess = 10.0
+local_coords = true
+texture = ExtResource("2_6afnw")
+emission_shape = 3
+emission_rect_extents = Vector2(320, 320)
+particle_flag_align_y = true
+gravity = Vector2(0, 0)
+initial_velocity_min = 0.5
+initial_velocity_max = 1.0
+angular_velocity_min = 1.0
+angular_velocity_max = 50.0
+scale_amount_min = 0.1
+scale_amount_max = 0.5
+scale_amount_curve = SubResource("Curve_xux4v")
+color_ramp = SubResource("Gradient_qc6vn")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
