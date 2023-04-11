@@ -44,6 +44,8 @@ _data = {
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_pqh2y")
 
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_us2jd")
