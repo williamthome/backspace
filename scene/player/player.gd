@@ -82,9 +82,11 @@ func _physics_process(delta):
 
 func animate(move_started: bool) -> void:
 	if move_started:
-		$AnimationPlayer.play("accelerate")
+		$AnimationAccelerate.play("accelerate")
+		$AnimationPropulsion.play("propulsion")
 	elif speed > 0:
-		var seconds = (speed / max_speed) * $AnimationPlayer.current_animation_length
-		$AnimationPlayer.seek(seconds, true)
+		var seconds = (speed / max_speed) * $AnimationAccelerate.current_animation_length
+		$AnimationAccelerate.seek(seconds, true)
 	else:
-		$AnimationPlayer.stop()
+		$AnimationAccelerate.stop()
+		$AnimationPropulsion.stop()
